@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  frontend:
+    image: ft_transcendence_frontend:${COMMIT_HASH}
+    build:
+      context: ./
+      dockerfile: ./frontend/Dockerfile
+    entrypoint: ["pnpm", "start"]
+    environment:
+      - $(DB_DIR)
+      - $(DB_FILE)
+    ports:
+      - "3000:3000"
+    volumes:
+      - logdir:/app/logs
+      - dbdir:$(DB_DIR)
+
+  backend:
+    image: ft_transcendence_backend:${COMMIT_HASH}
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile
+    command: [ "/app/dist/index.js"]
+    environment:
+      - $(DB_DIR)
+      - $(DB_FILE)
+    ports:
+      - "3001:3001"
+    volumes:
+      - logdir:/app/logs
+      - dbdir:$(DB_DIR)
+
+volumes:
+  logdir:
+  dbdir:
